@@ -1,0 +1,13 @@
+.buttons {
+  position: absolute;
+  top: 10px;
+}
+
+.tasks {
+  margin: 0;
+  padding-left: 15px;
+  overflow: hidden;
+  font-size: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
