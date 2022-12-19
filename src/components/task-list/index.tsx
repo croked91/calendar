@@ -1,9 +1,10 @@
-import { Button, Drawer, List, Modal, notification, Space } from "antd";
+import { Button, Drawer, List, notification, Space } from "antd";
 import { useAppDispatch } from "bll/hooks/useAppDispatch";
 import { useAppSelector } from "bll/hooks/useAppSelector";
-import { setEditableTask } from "bll/slices/editable-task";
+import { setEditableTask, setIsEditable } from "bll/slices/editable-task";
 import { deleteTask } from "bll/slices/tasks";
 import { EditTask } from "components/edit-task";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export const TaskList = () => {
@@ -13,34 +14,42 @@ export const TaskList = () => {
 
   const deleteHandler = (id: string) => {
     dispatch(deleteTask(id));
-    openNotification("warning");
+    openNotification("warning", "Задача удалена");
   };
 
   const [api, contextHolder] = notification.useNotification();
 
-  const openNotification = (type: "success" | "warning") => {
+  const openNotification = (
+    type: "success" | "warning",
+    description: string
+  ) => {
     api[type]({
       message: "Успешно",
-      description: "Задача удалена",
+      description,
     });
   };
 
+  useEffect(() => {
+    editableTask.isEdited &&
+      openNotification("success", "Задача отредакатирована");
+    dispatch(setIsEditable(false));
+  }, [editableTask.isEdited]);
+
   const editHandler = (id: string) => {
     dispatch(setEditableTask(id));
-    openNotification("success");
   };
 
   return (
     <Space direction="vertical">
       {contextHolder}
       <Drawer
-        open={editableTask !== ""}
+        open={editableTask.id !== ""}
         width={500}
         onClose={() => dispatch(setEditableTask(""))}
       >
-        {editableTask && (
+        {editableTask.id && (
           <EditTask
-            task={tasks.filter((task) => task.id === editableTask)[0]}
+            task={tasks.filter((task) => task.id === editableTask.id)[0]}
           />
         )}
       </Drawer>

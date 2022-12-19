@@ -1,18 +1,25 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
+import { IEditableTask } from "./interface";
 
-const initialState: string = "";
+const initialState: IEditableTask = {
+  id: "",
+  isEdited: false,
+};
 
 export const editableTask = createSlice({
   name: "editableTask",
   initialState,
   reducers: {
     setEditableTask: (state, action: PayloadAction<string>) => {
-      return action.payload;
+      return { ...state, id: action.payload };
+    },
+    setIsEditable: (state, action: PayloadAction<boolean>) => {
+      return { ...state, isEdited: action.payload };
     },
   },
 });
 
-export const { setEditableTask } = editableTask.actions;
+export const { setEditableTask, setIsEditable } = editableTask.actions;
 
 export default editableTask.reducer;

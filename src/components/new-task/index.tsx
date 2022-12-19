@@ -28,10 +28,21 @@ export const NewTask: React.FC = () => {
       id: String(Math.random()),
       title: values.title,
       date: values.date.format("YYYY-MM-DD"),
-      startTask: values.range[0].format("hh:mm"),
-      endTask: values.range[1].format("hh:mm"),
+      startTask: values.range[0].format("HH:mm"),
+      endTask: values.range[1].format("HH:mm"),
       reminderTime: values.reminderTime,
     };
+
+    const reminderT = dayjs(
+      dayjs(values.date)
+        .format("YYYY:MM:DD")
+        .concat(dayjs(values.range[0]).format(" HH:mm")),
+      "YYYY:MM:DD HH:mm"
+    )
+      .add(-`${values.reminderTime}`, "m")
+      .valueOf();
+
+    console.log(reminderT - dayjs().valueOf());
 
     dispatch(addNewTask(newTask));
     form.resetFields();

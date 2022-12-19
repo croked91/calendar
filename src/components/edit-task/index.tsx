@@ -1,15 +1,17 @@
+import { isEditable } from "@testing-library/user-event/dist/utils";
 import {
   Button,
   DatePicker,
   Form,
   Input,
+  notification,
   Select,
   Space,
   TimePicker,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { useAppDispatch } from "bll/hooks/useAppDispatch";
-import { setEditableTask } from "bll/slices/editable-task";
+import { setEditableTask, setIsEditable } from "bll/slices/editable-task";
 import { editTask } from "bll/slices/tasks";
 import { ITask } from "bll/slices/tasks/interface";
 import { options } from "components/new-task/constants";
@@ -25,20 +27,20 @@ export const EditTask: React.FC<IEditTask> = ({ task }) => {
   const dispatch = useAppDispatch();
   const [form] = useForm();
 
-
   const onFinish = (values: ITaskForm) => {
     const newTask: ITask = {
       id: task.id,
       title: values.title,
       date: values.date.format("YYYY-MM-DD"),
-      startTask: values.range[0].format("hh:mm"),
-      endTask: values.range[1].format("hh:mm"),
+      startTask: values.range[0].format("HH:mm"),
+      endTask: values.range[1].format("HH:mm"),
       reminderTime: values.reminderTime,
     };
 
     dispatch(editTask(newTask));
     dispatch(setEditableTask(""));
     form.resetFields();
+    dispatch(setIsEditable(true));
   };
 
   return (
