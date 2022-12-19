@@ -32,8 +32,6 @@ export const NewTask: React.FC = () => {
       reminderTime: values.reminderTime,
     };
 
-    console.log(newTask);
-
     dispatch(addNewTask(newTask));
     form.resetFields();
   };

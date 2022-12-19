@@ -15,13 +15,9 @@ export const tasks = createSlice({
       return state.filter((task) => task.id === action.payload);
     },
     editTask: (state, action: PayloadAction<ITask>) => {
-      return [
-        ...state,
-        {
-          ...state.find((task) => task.id === action.payload.id),
-          ...action.payload,
-        },
-      ];
+      return state.map((task) =>
+        task.id === action.payload.id ? { ...task, ...action.payload } : task
+      );
     },
     deleteTask: (state, action: PayloadAction<string>) => {
       return state.filter((task) => task.id !== action.payload);
