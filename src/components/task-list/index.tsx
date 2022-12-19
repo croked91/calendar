@@ -1,4 +1,4 @@
-import { Button, Drawer, List, Modal, Space } from "antd";
+import { Button, Drawer, List, Modal, notification, Space } from "antd";
 import { useAppDispatch } from "bll/hooks/useAppDispatch";
 import { useAppSelector } from "bll/hooks/useAppSelector";
 import { setEditableTask } from "bll/slices/editable-task";
@@ -13,14 +13,26 @@ export const TaskList = () => {
 
   const deleteHandler = (id: string) => {
     dispatch(deleteTask(id));
+    openNotification("warning");
+  };
+
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotification = (type: "success" | "warning") => {
+    api[type]({
+      message: "Успешно",
+      description: "Задача удалена",
+    });
   };
 
   const editHandler = (id: string) => {
     dispatch(setEditableTask(id));
+    openNotification("success");
   };
 
   return (
     <Space direction="vertical">
+      {contextHolder}
       <Drawer
         open={editableTask !== ""}
         width={500}

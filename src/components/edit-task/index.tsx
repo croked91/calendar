@@ -25,7 +25,6 @@ export const EditTask: React.FC<IEditTask> = ({ task }) => {
   const dispatch = useAppDispatch();
   const [form] = useForm();
 
-  console.log(task);
 
   const onFinish = (values: ITaskForm) => {
     const newTask: ITask = {

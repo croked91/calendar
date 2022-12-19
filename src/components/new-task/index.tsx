@@ -3,6 +3,7 @@ import {
   DatePicker,
   Form,
   Input,
+  notification,
   Select,
   Space,
   TimePicker,
@@ -34,24 +35,25 @@ export const NewTask: React.FC = () => {
 
     dispatch(addNewTask(newTask));
     form.resetFields();
+    openNotification();
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotification = () => {
+    api.success({
+      message: "Успешно",
+      description: "Задача добавлена",
+    });
   };
 
   return (
     <Space className={s.container} size={100} direction="vertical">
+      {contextHolder}
       <Link to="/">
         <Button type="primary">В календарь</Button>
       </Link>
-      <Form
-        form={form}
-        size="large"
-        name="new-task"
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-      >
+      <Form form={form} size="large" name="new-task" onFinish={onFinish}>
         <Form.Item
           name="title"
           rules={[{ required: true, message: "Введите название задачи!" }]}
