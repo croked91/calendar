@@ -4,7 +4,6 @@ import {
   DatePicker,
   Form,
   Input,
-  notification,
   Select,
   Space,
   TimePicker,
@@ -13,6 +12,7 @@ import { useForm } from "antd/es/form/Form";
 import { useAppDispatch } from "bll/hooks/useAppDispatch";
 import { setEditableTask, setIsEditable } from "bll/slices/editable-task";
 import { editTask } from "bll/slices/tasks";
+import { setNotice } from "bll/slices/notifications";
 import { ITask } from "bll/slices/tasks/interface";
 import { options } from "components/new-task/constants";
 import { ITaskForm } from "components/new-task/interface";
@@ -38,6 +38,8 @@ export const EditTask: React.FC<IEditTask> = ({ task }) => {
     };
 
     dispatch(editTask(newTask));
+    dispatch(setNotice(newTask));
+
     dispatch(setEditableTask(""));
     form.resetFields();
     dispatch(setIsEditable(true));

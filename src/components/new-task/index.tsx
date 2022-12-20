@@ -10,6 +10,7 @@ import {
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { useAppDispatch } from "bll/hooks/useAppDispatch";
+import { setNotice } from "bll/slices/notifications";
 import { addNewTask } from "bll/slices/tasks";
 import { ITask } from "bll/slices/tasks/interface";
 import dayjs from "dayjs";
@@ -23,16 +24,8 @@ import s from "./styles.module.css";
 export const NewTask: React.FC = () => {
   const dispatch = useAppDispatch();
   const [form] = useForm();
-  const onFinish = (values: ITaskForm) => {
-    const newTask: ITask = {
-      id: String(Math.random()),
-      title: values.title,
-      date: values.date.format("YYYY-MM-DD"),
-      startTask: values.range[0].format("HH:mm"),
-      endTask: values.range[1].format("HH:mm"),
-      reminderTime: values.reminderTime,
-    };
 
+  const onFinish = (values: ITaskForm) => {
     const reminderT = dayjs(
       dayjs(values.date)
         .format("YYYY:MM:DD")
@@ -40,11 +33,20 @@ export const NewTask: React.FC = () => {
       "YYYY:MM:DD HH:mm"
     )
       .add(-`${values.reminderTime}`, "m")
+      .add(-dayjs())
       .valueOf();
 
-    console.log(reminderT - dayjs().valueOf());
-
+    const newTask: ITask = {
+      id: String(Math.random()),
+      title: values.title,
+      date: values.date.format("YYYY-MM-DD"),
+      startTask: values.range[0].format("HH:mm"),
+      endTask: values.range[1].format("HH:mm"),
+      reminderTime: reminderT,
+    };
+    dispatch(setNotice(newTask));
     dispatch(addNewTask(newTask));
+
     form.resetFields();
     openNotification();
   };
