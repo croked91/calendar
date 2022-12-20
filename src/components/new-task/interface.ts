@@ -4,7 +4,7 @@ export interface ITaskForm {
   title: string;
   date: Dayjs;
   range: Dayjs[];
-  reminderTime?: number;
+  reminderTime: number;
 }
 
 

@@ -1,5 +1,5 @@
-import { ITask } from "bll/slices/tasks/interface";
+import { ITask } from "shared/lib/interfaces/ITask/interface";
 
 export interface IEditTask {
-    task: ITask
+  task: ITask;
 }

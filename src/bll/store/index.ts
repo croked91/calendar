@@ -1,22 +1,18 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import rootSaga from "bll/sagas";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import editableTask from "bll/slices/editable-task";
 import notifications from "bll/slices/notifications";
 import tasks from "bll/slices/tasks";
 import {
-  persistStore,
-  persistReducer,
   FLUSH,
-  REHYDRATE,
   PAUSE,
   PERSIST,
+  persistReducer,
+  persistStore,
   PURGE,
   REGISTER,
+  REHYDRATE,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import createSagaMiddleware from "redux-saga";
-
-const sagaMiddleware = createSagaMiddleware();
 
 const persistConfig = {
   key: "root",
@@ -38,12 +34,10 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(sagaMiddleware),
+    }),
 });
 
 export const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-
-sagaMiddleware.run(rootSaga);

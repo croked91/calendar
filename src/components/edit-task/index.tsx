@@ -1,4 +1,3 @@
-import { isEditable } from "@testing-library/user-event/dist/utils";
 import {
   Button,
   DatePicker,
@@ -11,14 +10,18 @@ import {
 import { useForm } from "antd/es/form/Form";
 import { useAppDispatch } from "bll/hooks/useAppDispatch";
 import { setEditableTask, setIsEditable } from "bll/slices/editable-task";
-import { editTask } from "bll/slices/tasks";
 import { setNotice } from "bll/slices/notifications";
-import { ITask } from "bll/slices/tasks/interface";
+import { editTask } from "bll/slices/tasks";
 import { options } from "components/new-task/constants";
 import { ITaskForm } from "components/new-task/interface";
 import dayjs from "dayjs";
 import React from "react";
-import { TIME_FORMAT } from "shared/lib/formats";
+import {
+  DATE_FORMAT,
+  REMINDER_TIME_FORMAT,
+  TIME_FORMAT,
+} from "shared/lib/formats";
+import { ITask } from "shared/lib/interfaces/ITask/interface";
 import { IEditTask } from "./interface";
 
 import s from "./styles.module.css";
@@ -28,13 +31,24 @@ export const EditTask: React.FC<IEditTask> = ({ task }) => {
   const [form] = useForm();
 
   const onFinish = (values: ITaskForm) => {
+    const reminderT = String(
+      dayjs(
+        dayjs(values.date)
+          .format(DATE_FORMAT)
+          .concat(dayjs(values.range[0]).format(" HH:mm")),
+        REMINDER_TIME_FORMAT
+      )
+        .add(-`${values.reminderTime}`, "m")
+        .format(REMINDER_TIME_FORMAT)
+    );
+
     const newTask: ITask = {
       id: task.id,
       title: values.title,
-      date: values.date.format("YYYY-MM-DD"),
-      startTask: values.range[0].format("HH:mm"),
-      endTask: values.range[1].format("HH:mm"),
-      reminderTime: values.reminderTime,
+      date: values.date.format(DATE_FORMAT),
+      startTask: values.range[0].format(TIME_FORMAT),
+      endTask: values.range[1].format(TIME_FORMAT),
+      reminderTime: reminderT,
     };
 
     dispatch(editTask(newTask));
@@ -54,7 +68,7 @@ export const EditTask: React.FC<IEditTask> = ({ task }) => {
         onFinish={onFinish}
         initialValues={{
           title: task.title,
-          date: dayjs(task.date),
+          date: dayjs(task.date, DATE_FORMAT),
           range: [dayjs(task.startTask, "hh:mm"), dayjs(task.endTask, "hh:mm")],
           reminderTime: task.reminderTime,
         }}
@@ -90,7 +104,10 @@ export const EditTask: React.FC<IEditTask> = ({ task }) => {
           />
         </Form.Item>
 
-        <Form.Item name="reminderTime">
+        <Form.Item
+          name="reminderTime"
+          rules={[{ required: true, message: "Выберите время напоминания!" }]}
+        >
           <Select placeholder="За сколько напомнить" options={options} />
         </Form.Item>
 

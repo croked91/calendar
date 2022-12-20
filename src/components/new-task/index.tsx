@@ -12,11 +12,15 @@ import { useForm } from "antd/es/form/Form";
 import { useAppDispatch } from "bll/hooks/useAppDispatch";
 import { setNotice } from "bll/slices/notifications";
 import { addNewTask } from "bll/slices/tasks";
-import { ITask } from "bll/slices/tasks/interface";
 import dayjs from "dayjs";
 import React from "react";
 import { Link } from "react-router-dom";
-import { TIME_FORMAT } from "shared/lib/formats";
+import {
+  DATE_FORMAT,
+  REMINDER_TIME_FORMAT,
+  TIME_FORMAT,
+} from "shared/lib/formats";
+import { ITask } from "shared/lib/interfaces/ITask/interface";
 import { options } from "./constants";
 import { ITaskForm } from "./interface";
 import s from "./styles.module.css";
@@ -26,22 +30,25 @@ export const NewTask: React.FC = () => {
   const [form] = useForm();
 
   const onFinish = (values: ITaskForm) => {
-    const reminderT = dayjs(
-      dayjs(values.date)
-        .format("YYYY:MM:DD")
-        .concat(dayjs(values.range[0]).format(" HH:mm")),
-      "YYYY:MM:DD HH:mm"
-    )
-      .add(-`${values.reminderTime}`, "m")
-      .add(-dayjs())
-      .valueOf();
+    const reminderT = String(
+      dayjs(
+        dayjs(values.date)
+          .format(DATE_FORMAT)
+          .concat(dayjs(values.range[0]).format(" HH:mm")),
+        REMINDER_TIME_FORMAT
+      )
+        .add(-`${values.reminderTime}`, "m")
+        .format(REMINDER_TIME_FORMAT)
+    );
 
+
+    
     const newTask: ITask = {
       id: String(Math.random()),
       title: values.title,
-      date: values.date.format("YYYY-MM-DD"),
-      startTask: values.range[0].format("HH:mm"),
-      endTask: values.range[1].format("HH:mm"),
+      date: values.date.format(DATE_FORMAT),
+      startTask: values.range[0].format(TIME_FORMAT),
+      endTask: values.range[1].format(TIME_FORMAT),
       reminderTime: reminderT,
     };
     dispatch(setNotice(newTask));
@@ -96,7 +103,12 @@ export const NewTask: React.FC = () => {
           />
         </Form.Item>
 
-        <Form.Item name="reminderTime">
+        <Form.Item
+          name="reminderTime"
+          rules={[
+            { required: true, message: "Выберите время выполнения задачи!" },
+          ]}
+        >
           <Select placeholder="За сколько напомнить" options={options} />
         </Form.Item>
 
