@@ -3,12 +3,14 @@ import {
   DatePicker,
   Form,
   Input,
+  notification,
   Select,
   Space,
   TimePicker,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { useAppDispatch } from "bll/hooks/useAppDispatch";
+import { setNotice } from "bll/slices/notifications";
 import { addNewTask } from "bll/slices/tasks";
 import { ITask } from "bll/slices/tasks/interface";
 import dayjs from "dayjs";
@@ -22,38 +24,49 @@ import s from "./styles.module.css";
 export const NewTask: React.FC = () => {
   const dispatch = useAppDispatch();
   const [form] = useForm();
+
   const onFinish = (values: ITaskForm) => {
+    const reminderT = dayjs(
+      dayjs(values.date)
+        .format("YYYY:MM:DD")
+        .concat(dayjs(values.range[0]).format(" HH:mm")),
+      "YYYY:MM:DD HH:mm"
+    )
+      .add(-`${values.reminderTime}`, "m")
+      .add(-dayjs())
+      .valueOf();
+
     const newTask: ITask = {
       id: String(Math.random()),
       title: values.title,
       date: values.date.format("YYYY-MM-DD"),
-      startTask: values.range[0].format("hh:mm"),
-      endTask: values.range[1].format("hh:mm"),
-      reminderTime: values.reminderTime,
+      startTask: values.range[0].format("HH:mm"),
+      endTask: values.range[1].format("HH:mm"),
+      reminderTime: reminderT,
     };
-
-    console.log(newTask);
-
+    dispatch(setNotice(newTask));
     dispatch(addNewTask(newTask));
+
     form.resetFields();
+    openNotification();
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotification = () => {
+    api.success({
+      message: "Успешно",
+      description: "Задача добавлена",
+    });
   };
 
   return (
     <Space className={s.container} size={100} direction="vertical">
+      {contextHolder}
       <Link to="/">
         <Button type="primary">В календарь</Button>
       </Link>
-      <Form
-        form={form}
-        size="large"
-        name="new-task"
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-      >
+      <Form form={form} size="large" name="new-task" onFinish={onFinish}>
         <Form.Item
           name="title"
           rules={[{ required: true, message: "Введите название задачи!" }]}
