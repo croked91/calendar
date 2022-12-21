@@ -1,5 +1,6 @@
 import { Button, Calendar, Space } from "antd";
 import { useAppSelector } from "bll/hooks/useAppSelector";
+import { Dayjs } from "dayjs";
 import { FC } from "react";
 import { Link } from "react-router-dom";
 import { useDataCell } from "./model";
@@ -20,7 +21,12 @@ export const CalendarComponent: FC = () => {
           <Button type="primary">+ Добавить задачу</Button>
         </Link>
       </Space>
-      <Calendar dateCellRender={dataCell} className={s.calendar} />;
+      <Calendar
+        onSelect={(date: Dayjs) => console.log(date)}
+        dateCellRender={dataCell}
+        className={s.calendar}
+      />
+      ;
     </>
   );
 };

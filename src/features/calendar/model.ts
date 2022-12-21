@@ -11,7 +11,11 @@ export const useDataCell = (tasks: ITask[], className?: string) => {
         dayjs(task.date, DATE_FORMAT).format(DATE_FORMAT) ===
         date.format(DATE_FORMAT)
       ) {
-        return createElement("div", { className }, `${task.title}`);
+        return createElement(
+          "div",
+          { className, key: Math.random() },
+          `${task.title}`
+        );
       }
     });
   };
