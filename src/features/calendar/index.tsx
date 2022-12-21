@@ -1,7 +1,8 @@
-import { Button, Calendar, Space } from "antd";
+import { Button, Calendar, Drawer, Space } from "antd";
 import { useAppSelector } from "bll/hooks/useAppSelector";
 import { Dayjs } from "dayjs";
-import { FC } from "react";
+import { TaskList } from "features/task-list";
+import { FC, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDataCell } from "./model";
 
@@ -10,6 +11,13 @@ import s from "./styles.module.css";
 export const CalendarComponent: FC = () => {
   const tasks = useAppSelector((store) => store.tasks);
   const dataCell = useDataCell(tasks, s.tasks);
+  const [isDayTasksOpen, setIsDayTasksOpen] = useState(false);
+  const [currentDate, setCurrentDate] = useState<Dayjs>();
+
+  const onSelectHandler = (date: Dayjs) => {
+    setIsDayTasksOpen(true);
+    setCurrentDate(date);
+  };
 
   return (
     <>
@@ -22,11 +30,19 @@ export const CalendarComponent: FC = () => {
         </Link>
       </Space>
       <Calendar
-        onSelect={(date: Dayjs) => console.log(date)}
+        onSelect={(date: Dayjs) => onSelectHandler(date)}
         dateCellRender={dataCell}
         className={s.calendar}
       />
-      ;
+      {tasks.length && (
+        <Drawer
+          width={"100%"}
+          onClose={() => setIsDayTasksOpen(false)}
+          open={isDayTasksOpen}
+        >
+          <TaskList currentDate={currentDate} />
+        </Drawer>
+      )}
     </>
   );
 };

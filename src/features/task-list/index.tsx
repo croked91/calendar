@@ -5,14 +5,18 @@ import { useAppSelector } from "bll/hooks/useAppSelector";
 import { setEditableTask, setIsEditable } from "bll/slices/editable-task";
 import { deleteTask } from "bll/slices/tasks";
 import { EditTask } from "features/edit-task";
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { DATE_FORMAT } from "shared/lib/constants/formats";
+import { ITaskList } from "./interface";
 
-export const TaskList = () => {
+export const TaskList: FC<ITaskList> = ({ currentDate }) => {
   const tasks = useAppSelector((s) => s.tasks);
   const editableTask = useAppSelector((s) => s.editableTask);
   const { contextHolder, openNotification } = useAppNotification();
   const dispatch = useAppDispatch();
+
+  console.log(tasks[0].date);
 
   useEffect(() => {
     editableTask.isEdited &&
@@ -60,24 +64,45 @@ export const TaskList = () => {
         </Link>
       </Space>
       <List style={{ width: "100vw" }}>
-        {tasks.map((task) => (
-          <List.Item
-            key={task.id}
-            actions={[
-              <Button onClick={() => deleteHandler(task.id, task.title)}>
-                Удалить
-              </Button>,
-              <Button onClick={() => editHandler(task.id)}>
-                Редактировать
-              </Button>,
-            ]}
-          >
-            <List.Item.Meta
-              title={task.title}
-              description={`с ${task.startTask} до ${task.endTask}`}
-            />
-          </List.Item>
-        ))}
+        {currentDate
+          ? tasks
+              .filter((task) => task.date === currentDate.format(DATE_FORMAT))
+              .map((task) => (
+                <List.Item
+                  key={task.id}
+                  actions={[
+                    <Button onClick={() => deleteHandler(task.id, task.title)}>
+                      Удалить
+                    </Button>,
+                    <Button onClick={() => editHandler(task.id)}>
+                      Редактировать
+                    </Button>,
+                  ]}
+                >
+                  <List.Item.Meta
+                    title={task.title}
+                    description={`с ${task.startTask} до ${task.endTask}`}
+                  />
+                </List.Item>
+              ))
+          : tasks.map((task) => (
+              <List.Item
+                key={task.id}
+                actions={[
+                  <Button onClick={() => deleteHandler(task.id, task.title)}>
+                    Удалить
+                  </Button>,
+                  <Button onClick={() => editHandler(task.id)}>
+                    Редактировать
+                  </Button>,
+                ]}
+              >
+                <List.Item.Meta
+                  title={task.title}
+                  description={`с ${task.startTask} до ${task.endTask}`}
+                />
+              </List.Item>
+            ))}
       </List>
     </Space>
   );
