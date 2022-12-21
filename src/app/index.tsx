@@ -5,12 +5,13 @@ import { useAppSelector } from "bll/hooks/useAppSelector";
 import { editTask } from "bll/slices/tasks";
 import { Routing } from "pages";
 import { useEffect, useRef } from "react";
-import { REMINDER_TIME_FORMAT } from "shared/lib/formats";
+import { REMINDER_TIME_FORMAT } from "shared/lib/constants/formats";
 import { getNearestTask } from "shared/lib/utils/getNearestTask";
 import { getTimeoutDuration } from "shared/lib/utils/getTimeoutDuration";
 import { withProviders } from "./providers";
 
 const App = () => {
+  //TODO move this logic to another place, like provider or hook
   const { contextHolder, openNotification } = useAppNotification();
   const tasks = useAppSelector((s) => s.tasks);
   const dispatch = useAppDispatch();

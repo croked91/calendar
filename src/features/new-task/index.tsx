@@ -3,76 +3,36 @@ import {
   DatePicker,
   Form,
   Input,
-  notification,
   Select,
   Space,
   TimePicker,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { useAppDispatch } from "bll/hooks/useAppDispatch";
-import { setNotice } from "bll/slices/notifications";
-import { addNewTask } from "bll/slices/tasks";
+import { useAppNotification } from "bll/hooks/useAppNotification";
 import dayjs from "dayjs";
 import React from "react";
 import { Link } from "react-router-dom";
-import {
-  DATE_FORMAT,
-  REMINDER_TIME_FORMAT,
-  TIME_FORMAT,
-} from "shared/lib/formats";
-import { ITask } from "shared/lib/interfaces/ITask/interface";
-import { options } from "./constants";
-import { ITaskForm } from "./interface";
+import { TIME_FORMAT } from "shared/lib/constants/formats";
+import { options } from "../../shared/lib/constants/reminder-time-options";
+import { useFinishNewTask } from "./model";
 import s from "./styles.module.css";
 
 export const NewTask: React.FC = () => {
-  const dispatch = useAppDispatch();
+  const { contextHolder, openNotification } = useAppNotification();
   const [form] = useForm();
-
-  const onFinish = (values: ITaskForm) => {
-    const reminderT = String(
-      dayjs(
-        dayjs(values.date)
-          .format(DATE_FORMAT)
-          .concat(dayjs(values.range[0]).format(" HH:mm")),
-        REMINDER_TIME_FORMAT
-      )
-        .add(-`${values.reminderTime}`, "m")
-        .format(REMINDER_TIME_FORMAT)
-    );
-
-
-    
-    const newTask: ITask = {
-      id: String(Math.random()),
-      title: values.title,
-      date: values.date.format(DATE_FORMAT),
-      startTask: values.range[0].format(TIME_FORMAT),
-      endTask: values.range[1].format(TIME_FORMAT),
-      reminderTime: reminderT,
-    };
-    dispatch(setNotice(newTask));
-    dispatch(addNewTask(newTask));
-
-    form.resetFields();
-    openNotification();
-  };
-
-  const [api, contextHolder] = notification.useNotification();
-
-  const openNotification = () => {
-    api.success({
-      message: "Успешно",
-      description: "Задача добавлена",
-    });
-  };
+  const onFinish = useFinishNewTask(form, openNotification);
 
   return (
-    <Space className={s.container} size={100} direction="vertical">
+    <Space className={s.container} size={40} direction="vertical">
       {contextHolder}
-      <Link to="/">
-        <Button type="primary">В календарь</Button>
-      </Link>
+      <Space direction="horizontal">
+        <Link to="/">
+          <Button type="primary">Календарь</Button>
+        </Link>
+        <Link to="/task-list">
+          <Button type="primary">Все задачи</Button>
+        </Link>
+      </Space>
       <Form form={form} size="large" name="new-task" onFinish={onFinish}>
         <Form.Item
           name="title"
@@ -106,7 +66,7 @@ export const NewTask: React.FC = () => {
         <Form.Item
           name="reminderTime"
           rules={[
-            { required: true, message: "Выберите время выполнения задачи!" },
+            { required: true, message: "Выберите за сколько напомнить!" },
           ]}
         >
           <Select placeholder="За сколько напомнить" options={options} />

@@ -1,7 +1,7 @@
-import { CalendarComponent } from "components/calendar";
-import { NewTask } from "components/new-task";
-import { TaskList } from "components/task-list";
-import { Routes, Route } from "react-router";
+import { CalendarComponent } from "features/calendar";
+import { NewTask } from "features/new-task";
+import { TaskList } from "features/task-list";
+import { Route, Routes } from "react-router";
 
 export const Routing = () => {
   return (

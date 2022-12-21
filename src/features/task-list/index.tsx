@@ -1,39 +1,37 @@
-import { Button, Drawer, List, notification, Space } from "antd";
+import { Button, Drawer, List, Space } from "antd";
 import { useAppDispatch } from "bll/hooks/useAppDispatch";
+import { useAppNotification } from "bll/hooks/useAppNotification";
 import { useAppSelector } from "bll/hooks/useAppSelector";
 import { setEditableTask, setIsEditable } from "bll/slices/editable-task";
 import { deleteTask } from "bll/slices/tasks";
-import { EditTask } from "components/edit-task";
+import { EditTask } from "features/edit-task";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export const TaskList = () => {
   const tasks = useAppSelector((s) => s.tasks);
-  const dispatch = useAppDispatch();
   const editableTask = useAppSelector((s) => s.editableTask);
-
-  const deleteHandler = (id: string) => {
-    dispatch(deleteTask(id));
-    openNotification("warning", "Задача удалена");
-  };
-
-  const [api, contextHolder] = notification.useNotification();
-
-  const openNotification = (
-    type: "success" | "warning",
-    description: string
-  ) => {
-    api[type]({
-      message: "Успешно",
-      description,
-    });
-  };
+  const { contextHolder, openNotification } = useAppNotification();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     editableTask.isEdited &&
-      openNotification("success", "Задача отредакатирована");
+      openNotification({
+        type: "success",
+        message: "Успешно",
+        description: "Задача отредактированна",
+      });
     dispatch(setIsEditable(false));
   }, [editableTask.isEdited]);
+
+  const deleteHandler = (id: string, title: string) => {
+    dispatch(deleteTask(id));
+    openNotification({
+      type: "warning",
+      message: "Успех",
+      description: `Задача ${title} удалена`,
+    });
+  };
 
   const editHandler = (id: string) => {
     dispatch(setEditableTask(id));
@@ -53,15 +51,22 @@ export const TaskList = () => {
           />
         )}
       </Drawer>
-      <Link to="/new-task">
-        <Button type="primary">+ Добавить задачу</Button>
-      </Link>
+      <Space direction="horizontal">
+        <Link to="/">
+          <Button type="primary">Календарь</Button>
+        </Link>
+        <Link to="/new-task">
+          <Button type="primary">+ Добавить задачу</Button>
+        </Link>
+      </Space>
       <List style={{ width: "100vw" }}>
         {tasks.map((task) => (
           <List.Item
             key={task.id}
             actions={[
-              <Button onClick={() => deleteHandler(task.id)}>Удалить</Button>,
+              <Button onClick={() => deleteHandler(task.id, task.title)}>
+                Удалить
+              </Button>,
               <Button onClick={() => editHandler(task.id)}>
                 Редактировать
               </Button>,

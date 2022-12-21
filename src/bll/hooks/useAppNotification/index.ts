@@ -1,15 +1,10 @@
 import { notification } from "antd";
-
-type OpenNotification = {
-  type: "success" | "info" | "warning" | "error";
-  message: string;
-  description: string;
-};
+import { IOpenNotification } from "shared/lib/interfaces/IOpenNotification";
 
 export const useAppNotification = () => {
   const [api, contextHolder] = notification.useNotification();
 
-  const openNotification = (args: OpenNotification) => {
+  const openNotification = (args: IOpenNotification) => {
     const { type, message, description } = args;
     api[type]({
       message,

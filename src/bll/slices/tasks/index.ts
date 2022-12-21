@@ -1,6 +1,6 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import { ITask } from "../../../shared/lib/interfaces/ITask/interface";
+import { ITask } from "shared/lib/interfaces/ITask/interface";
 
 const initialState: ITask[] = [];
 
@@ -26,5 +26,8 @@ export const tasks = createSlice({
 });
 
 export const { addNewTask, getOneTask, editTask, deleteTask } = tasks.actions;
+
+
+
 
 export default tasks.reducer;
