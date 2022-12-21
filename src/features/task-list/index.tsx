@@ -16,7 +16,6 @@ export const TaskList: FC<ITaskList> = ({ currentDate }) => {
   const { contextHolder, openNotification } = useAppNotification();
   const dispatch = useAppDispatch();
 
-  console.log(tasks[0].date);
 
   useEffect(() => {
     editableTask.isEdited &&

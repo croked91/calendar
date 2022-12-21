@@ -34,15 +34,13 @@ export const CalendarComponent: FC = () => {
         dateCellRender={dataCell}
         className={s.calendar}
       />
-      {tasks.length && (
-        <Drawer
-          width={"100%"}
-          onClose={() => setIsDayTasksOpen(false)}
-          open={isDayTasksOpen}
-        >
-          <TaskList currentDate={currentDate} />
-        </Drawer>
-      )}
+      <Drawer
+        width={"100%"}
+        onClose={() => setIsDayTasksOpen(false)}
+        open={isDayTasksOpen}
+      >
+        <TaskList currentDate={currentDate} />
+      </Drawer>
     </>
   );
 };
