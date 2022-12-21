@@ -5,7 +5,7 @@ import { editTask } from "bll/slices/tasks";
 import { CalendarComponent } from "components/calendar";
 import { NewTask } from "components/new-task";
 import { TaskList } from "components/task-list";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { REMINDER_TIME_FORMAT } from "shared/lib/formats";
 import { getNearestTask } from "shared/lib/utils/getNearestTask";
@@ -14,6 +14,7 @@ import { getTimeoutDuration } from "shared/lib/utils/getTimeoutDuration";
 export default function App() {
   const tasks = useAppSelector((s) => s.tasks);
   const dispatch = useAppDispatch();
+  const timeout = useRef<NodeJS.Timeout>();
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -31,8 +32,8 @@ export default function App() {
   useEffect(() => {
     if (tasks.length) {
       const task = getNearestTask(tasks, REMINDER_TIME_FORMAT);
-      task.reminderTime &&
-        setTimeout(() => {
+      if (task.reminderTime) {
+        timeout.current = setTimeout(() => {
           openNotification(
             "success",
             "Внимание",
@@ -40,7 +41,9 @@ export default function App() {
           );
           dispatch(editTask({ ...task, reminderTime: null }));
         }, getTimeoutDuration(tasks, getNearestTask, REMINDER_TIME_FORMAT));
+      }
     }
+    return () => clearTimeout(timeout.current);
   }, [tasks]);
 
   return (
